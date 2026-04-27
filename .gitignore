@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+
+# uv
+.venv/
+
+# Env
+.env
+
+# Hugging Face cache (in case HF_HOME is set to repo dir)
+.cache/
+
+# SentinelSleep generated artifacts — regenerable, often large
+data/audio_cache/
+data/events.db
+data/events.db-journal
+data/events.db-wal
+data/events.db-shm
+
+# Test fixtures: track names + SOURCES.md, not the audio bytes
+data/test_fixtures/*.wav
+!data/test_fixtures/SOURCES.md
+
+# Demo recordings (large, regenerable)
+docs/demo.mp4
+docs/demo.gif
+
+# Streamlit secrets
+.streamlit/secrets.toml
+
+# Editor
+.vscode/
+.idea/
+*.swp
+.DS_Store
