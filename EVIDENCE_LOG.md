@@ -19,6 +19,32 @@ and a "superseded by ADR-NNN" note.
 
 ---
 
+## ADR-006 — DSS normalization requires multi-class co-occurrence to flag
+
+- **Date:** 2026-04-27
+- **Phase:** 1 (Detection Layer)
+- **Status:** accepted
+- **Context:** During Phase 1 test development, discovered that the DSS formula
+  `weighted_sum / sum(all_weights)` produces a single-class ceiling of ≈0.16
+  (1.0 / 6.2 for the top-weight class at probability 1.0). This means a single
+  distress class firing at full strength does NOT breach the 0.4 flag threshold.
+  Three moderate classes (0.7/0.6/0.5) give DSS ≈ 0.28. Three top-weight classes
+  at 0.9 each give DSS ≈ 0.42, just above threshold.
+- **Decision:** Keep the normalized formula as designed. The multi-class co-occurrence
+  requirement is a feature: acoustic nightmares produce several simultaneous distress
+  signals (crying + heavy breathing + whimpering), while false positives are typically
+  single-class activations (someone coughing, a door creak). The threshold of 0.4
+  is calibrated to require a genuine multi-signal profile.
+- **Consequences:** Real nightmare audio (multiple co-occurring distress sounds)
+  should breach 0.4. Single-class false positives (snoring, TV speech) should stay
+  below 0.3. Phase 1 acceptance integration tests will validate this empirically.
+  The DSS_FLAG_THRESHOLD (0.4) may need tuning after Phase 1 integration testing.
+- **Alternatives considered:** Normalizing by sum of active distress weights only
+  (not all weights) — rejected: this would inflate DSS for any single strong signal
+  and cause more false positives.
+
+---
+
 ## ADR-001 — Use uv with Python 3.11 for environment management
 
 - **Date:** 2026-04-27
