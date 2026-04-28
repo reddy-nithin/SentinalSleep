@@ -4,6 +4,12 @@ SentinelSleep depends on several pre-trained models. Each model retains
 its own license. Users must comply with the most restrictive license in
 use — currently **CC-BY-NC-SA-4.0**, which prohibits commercial use.
 
+## Inference libraries (no weights in-repo)
+
+| Library | Source | License | Use |
+|---------|--------|---------|-----|
+| [diffusers](https://github.com/huggingface/diffusers) | Hugging Face | Apache-2.0 | `AudioLDM2Pipeline` in Layer 3 pre-generation only |
+
 ## Pre-trained models
 
 | Model | Source | License | Layer |

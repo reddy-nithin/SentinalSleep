@@ -188,12 +188,12 @@ class TestTopDistressContributors:
         assert result[1][0] == "Rustle"
 
     def test_tuple_structure(self) -> None:
-        probs = {"Heavy breathing": 0.7}
+        probs = {"Breathing": 0.7}
         result = top_distress_contributors(probs, top_k=1)
         name, prob, contribution = result[0]
-        assert name == "Heavy breathing"
+        assert name == "Breathing"
         assert prob == pytest.approx(0.7)
-        assert contribution == pytest.approx(0.7 * config.DISTRESS_CLASS_WEIGHTS["Heavy breathing"])
+        assert contribution == pytest.approx(0.7 * config.DISTRESS_CLASS_WEIGHTS["Breathing"])
 
     def test_empty_probabilities(self) -> None:
         result = top_distress_contributors({})

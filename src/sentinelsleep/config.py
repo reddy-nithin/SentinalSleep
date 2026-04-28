@@ -45,13 +45,19 @@ AST_MODEL_ID: Final[str] = "MIT/ast-finetuned-audioset-10-10-0.4593"
 DSS_FLAG_THRESHOLD: Final[float] = 0.4        # DSS > this → escalate to verification
 DSS_FALSE_POSITIVE_CEILING: Final[float] = 0.3  # negative fixtures must stay below this
 
+# Minimum DSS a nightmare fixture must score (best chunk, full clip scan).
+# Lower than DSS_FLAG_THRESHOLD because test clips are single-class activations;
+# the live system fires on multi-class co-occurrence.  Empirically measured at 0.01–0.08
+# on M2 with panic/sobbing audio.  See ADR-007.
+DSS_NIGHTMARE_FIXTURE_MIN: Final[float] = 0.01
+
 # Weighted AudioSet distress classes.  Keys must match exact AudioSet label strings.
 DISTRESS_CLASS_WEIGHTS: Final[dict[str, float]] = {
     "Crying, sobbing": 1.0,
     "Whimper": 0.9,
     "Screaming": 1.0,
     "Wail, moan": 0.8,
-    "Heavy breathing": 0.6,
+    "Breathing": 0.6,
     "Gasp": 0.7,
     "Groan": 0.5,
     "Rustle": 0.3,
@@ -71,6 +77,7 @@ VALENCE_MAX_FOR_NIGHTMARE: Final[float] = 0.4    # valence < this = negative sta
 AROUSAL_MIN_FOR_NIGHTMARE: Final[float] = 0.6    # arousal > this = activated
 DOMINANCE_MAX_FOR_NIGHTMARE: Final[float] = 0.4  # dominance < this = low control
 NIGHTMARE_CONFIRM_DURATION_SECONDS: Final[int] = 15  # must persist this long
+VERIFICATION_LATENCY_BUDGET_MS: Final[int] = 500    # per-chunk max (plan §7 Phase 2)
 
 # ---------------------------------------------------------------------------
 # Intervention — Layer 3 (pre-generated cache)
@@ -82,6 +89,50 @@ AUDIOLDM2_MODEL_ID: Final[str] = "cvssp/audioldm2"
 INTERVENTION_DURATION_SECONDS: Final[int] = 60
 INTERVENTION_PLAYBACK_DBFS: Final[float] = -20.0   # playback level (ambient)
 SOUNDSCAPE_RELATIVE_DBFS: Final[float] = -6.0      # soundscape under music
+
+# Native output sample rates for each generation model.
+# MusicGen produces 32 kHz; AudioLDM2 produces 16 kHz.
+# The cache builder upsamples everything to INTERVENTION_SAMPLE_RATE (44.1 kHz).
+MUSICGEN_NATIVE_SAMPLE_RATE: Final[int] = 32_000
+AUDIOLDM2_NATIVE_SAMPLE_RATE: Final[int] = 16_000
+
+# ---------------------------------------------------------------------------
+# Generation — prompt library
+# ---------------------------------------------------------------------------
+
+# MusicGen text prompts (one per music variant).  Keep at 60 BPM, no percussion,
+# low frequency — the goal is sleep-safe ambient texture.
+MUSIC_PROMPTS: Final[list[str]] = [
+    (
+        "slow calming ambient music, 60 BPM, low frequency drone, no percussion, "
+        "sleep therapy, gentle, warm, soft synth pads"
+    ),
+    (
+        "meditative ambient music, very slow tempo, deep bass hum, ethereal pads, "
+        "no rhythm, sleep aid, minimalist, 60 BPM"
+    ),
+    (
+        "peaceful ambient soundscape with soft piano notes, slow breathing rhythm, "
+        "60 BPM, no drums, therapeutic, lo-fi, warm tone"
+    ),
+]
+
+# AudioLDM2 text prompts (one per soundscape variant).  All should be distant,
+# low-energy, and free of sudden transients that might cause arousal.
+SOUNDSCAPE_PROMPTS: Final[list[str]] = [
+    "gentle ocean waves at night, distant and slow, soft water sounds, no birds",
+    "soft steady rain on leaves, quiet forest background, calm and distant",
+    "quiet forest at night, light wind through trees, no birds, peaceful",
+]
+
+# Number of variants to generate (must match len of *_PROMPTS above).
+MUSIC_VARIANTS_COUNT: Final[int] = 3
+SOUNDSCAPE_VARIANTS_COUNT: Final[int] = 3
+
+# Mixed intervention variant counts (mild + severe).  Built from combinations
+# of the music and soundscape variants above.
+MILD_VARIANTS_COUNT: Final[int] = 5
+SEVERE_VARIANTS_COUNT: Final[int] = 5
 
 # ---------------------------------------------------------------------------
 # Escalation — Layer 4

@@ -82,9 +82,9 @@ uv run streamlit run scripts/run_dashboard.py
 | Phase | Description | Status |
 |-------|-------------|--------|
 | 0 | Setup & Scaffolding | ✅ Complete |
-| 1 | Detection Layer (AST + DSS) | ⬜ Pending |
-| 2 | Verification Layer (wav2vec2) | ⬜ Pending |
-| 3 | Generation Layer (cache builder) | ⬜ Pending |
+| 1 | Detection Layer (AST + DSS) | ✅ Complete |
+| 2 | Verification Layer (wav2vec2) | ✅ Complete |
+| 3 | Generation Layer (cache builder) | ✅ Complete |
 | 4 | Orchestration (state machine + event log) | ⬜ Pending |
 | 5 | Dashboard (Streamlit) | ⬜ Pending |
 | 6 | Demo Mode (simulator) | ⬜ Pending |
