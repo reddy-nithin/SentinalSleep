@@ -44,6 +44,7 @@ from scipy import signal
 
 from sentinelsleep import config
 from sentinelsleep.generation.audioldm2_wrapper import AudioLDM2LoadError
+from sentinelsleep.generation.manifest import write_manifest as _write_manifest
 from sentinelsleep.generation.mixer import create_mild_variant, create_severe_variant, validate_cache_clip
 
 logger = logging.getLogger(__name__)
@@ -172,7 +173,7 @@ def _generate_music() -> list[Path]:
 # ---------------------------------------------------------------------------
 
 
-def _generate_soundscapes(*, use_synthetic: bool = False) -> list[Path]:
+def _generate_soundscapes(*, use_synthetic: bool = False) -> tuple[list[Path], bool]:
     """Load AudioLDM2, generate all soundscape variants, unload, return paths.
 
     If ``use_synthetic`` is True, skips AudioLDM2 and writes synthetic placeholders
@@ -182,8 +183,9 @@ def _generate_soundscapes(*, use_synthetic: bool = False) -> list[Path]:
     files with the same synthetic fallback so mixing can complete.
 
     Returns:
-        Ordered list of Paths ``soundscape_v{i}`` for
-        ``i in 0 .. SOUNDSCAPE_VARIANTS_COUNT-1``.
+        Tuple of (ordered list of Paths, fallback_used flag).  ``fallback_used``
+        is ``True`` when synthetic pink-noise placeholders were written instead of
+        real AudioLDM2 output.
     """
     from sentinelsleep.generation.audioldm2_wrapper import AudioLDM2Wrapper
 
@@ -202,7 +204,7 @@ def _generate_soundscapes(*, use_synthetic: bool = False) -> list[Path]:
 
     if all(p.exists() for p in all_expected):
         logger.info("All soundscape clips already cached — skipping AudioLDM2 load")
-        return all_expected
+        return all_expected, False
 
     if use_synthetic:
         logger.warning(
@@ -215,7 +217,7 @@ def _generate_soundscapes(*, use_synthetic: bool = False) -> list[Path]:
                 continue
             tag = _SOUNDSCAPE_TAGS[i] if i < len(_SOUNDSCAPE_TAGS) else f"soundscape_v{i + 1}"
             _synthesize_soundscape_fallback(out, tag)
-        return all_expected
+        return all_expected, True
 
     try:
         gen = AudioLDM2Wrapper()
@@ -231,7 +233,7 @@ def _generate_soundscapes(*, use_synthetic: bool = False) -> list[Path]:
                 continue
             tag = _SOUNDSCAPE_TAGS[i] if i < len(_SOUNDSCAPE_TAGS) else f"soundscape_v{i + 1}"
             _synthesize_soundscape_fallback(out, tag)
-        return all_expected
+        return all_expected, True
 
     for i, prompt in enumerate(config.SOUNDSCAPE_PROMPTS[: config.SOUNDSCAPE_VARIANTS_COUNT]):
         out = config.SOUNDSCAPE_CACHE_DIR / _soundscape_filename(i)
@@ -249,7 +251,7 @@ def _generate_soundscapes(*, use_synthetic: bool = False) -> list[Path]:
 
     gen.unload()
     logger.info("Soundscape generation complete — %d variants at %s", len(all_expected), config.SOUNDSCAPE_CACHE_DIR)
-    return all_expected
+    return all_expected, False
 
 
 # ---------------------------------------------------------------------------
@@ -398,6 +400,7 @@ def build_cache(
     skip_soundscapes: bool = False,
     skip_mixing: bool = False,
     use_synthetic_soundscape: bool = False,
+    write_manifest: bool = True,
 ) -> bool:
     """Build the complete therapeutic audio cache.
 
@@ -416,6 +419,8 @@ def build_cache(
         skip_mixing:      Skip Step 3 (Mixer).
         use_synthetic_soundscape: If True, never load AudioLDM2; write synthetic
             placeholders for missing soundscapes (ADR-010).
+        write_manifest:   If True (default), write ``data/audio_cache/manifest.json``
+            after validation passes (ADR-013).
 
     Returns:
         ``True`` if all generated/cached clips pass validation, ``False`` otherwise.
@@ -445,6 +450,7 @@ def build_cache(
         music_paths = _generate_music()
 
     # Step 2 — ordered paths align with ``_MILD_PAIRS`` / ``_SEVERE_PAIRS`` indices.
+    soundscape_fallback: bool = False
     if skip_soundscapes:
         soundscape_paths = [
             config.SOUNDSCAPE_CACHE_DIR / _soundscape_filename(i)
@@ -461,7 +467,9 @@ def build_cache(
             "Skipping soundscape generation — using %d cached files", len(soundscape_paths)
         )
     else:
-        soundscape_paths = _generate_soundscapes(use_synthetic=use_synthetic_soundscape)
+        soundscape_paths, soundscape_fallback = _generate_soundscapes(
+            use_synthetic=use_synthetic_soundscape
+        )
 
     # Step 3
     if skip_mixing:
@@ -484,9 +492,21 @@ def build_cache(
             return False
         mixed_paths = _mix_all(music_paths, soundscape_paths)
 
-    # Step 4
+    # Step 4 — validate and optionally write manifest.
     all_valid = _validate_cache(mixed_paths)
     _print_manifest()
+
+    if all_valid and write_manifest:
+        manifest_path = _write_manifest(
+            music_paths=music_paths,
+            soundscape_paths=soundscape_paths,
+            mixed_paths=mixed_paths,
+            mild_pairs=_MILD_PAIRS[: config.MILD_VARIANTS_COUNT],
+            severe_pairs=_SEVERE_PAIRS[: config.SEVERE_VARIANTS_COUNT],
+            device=config.select_device(),
+            fallback_used={"music": False, "soundscape": soundscape_fallback},
+        )
+        logger.info("Manifest written → %s", manifest_path)
 
     if all_valid:
         logger.info("")

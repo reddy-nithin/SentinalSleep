@@ -34,6 +34,14 @@ data/test_fixtures/*.wav
 docs/demo.mp4
 docs/demo.gif
 
+# Development artifacts — not part of the shipped product
+SENTINELSLEEP_PLAN.md
+EVIDENCE_LOG.md
+.claude/
+docs/intermediate_results.md
+docs/intermediate_results.pdf
+docs/.render/
+
 # Streamlit secrets
 .streamlit/secrets.toml
 

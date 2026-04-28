@@ -54,6 +54,11 @@ def main() -> None:
             "any missing soundscapes (ADR-010)."
         ),
     )
+    parser.add_argument(
+        "--no-manifest",
+        action="store_true",
+        help="Skip writing data/audio_cache/manifest.json after a successful build (ADR-013).",
+    )
     args = parser.parse_args()
 
     from sentinelsleep.generation.pregenerate import build_cache
@@ -63,6 +68,7 @@ def main() -> None:
         skip_soundscapes=args.skip_soundscapes,
         skip_mixing=args.skip_mixing,
         use_synthetic_soundscape=args.use_synthetic_soundscape,
+        write_manifest=not args.no_manifest,
     )
     sys.exit(0 if ok else 1)
 

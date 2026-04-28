@@ -90,6 +90,7 @@ class TestBuildCacheSkips:
             skip_soundscapes=True,
             skip_mixing=True,
             use_synthetic_soundscape=False,
+            write_manifest=False,  # dirs are siblings of audio_cache, not children; manifest tested separately
         )
         assert ok is True
 
