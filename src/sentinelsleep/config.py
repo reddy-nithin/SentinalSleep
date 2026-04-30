@@ -84,6 +84,9 @@ VERIFICATION_LATENCY_BUDGET_MS: Final[int] = 500    # per-chunk max (plan §7 Ph
 # ---------------------------------------------------------------------------
 
 MUSICGEN_MODEL_ID: Final[str] = "facebook/musicgen-small"
+# AudioGen (Meta AudioCraft) replaces AudioLDM2 for soundscape generation (ADR-014).
+AUDIOGEN_MODEL_ID: Final[str] = "facebook/audiogen-medium"
+# Deprecated: use AUDIOGEN_MODEL_ID. Kept for manifest back-compat with schema v1 caches.
 AUDIOLDM2_MODEL_ID: Final[str] = "cvssp/audioldm2"
 
 INTERVENTION_DURATION_SECONDS: Final[int] = 60
@@ -91,10 +94,11 @@ INTERVENTION_PLAYBACK_DBFS: Final[float] = -20.0   # playback level (ambient)
 SOUNDSCAPE_RELATIVE_DBFS: Final[float] = -6.0      # soundscape under music
 
 # Native output sample rates for each generation model.
-# MusicGen produces 32 kHz; AudioLDM2 produces 16 kHz.
+# MusicGen produces 32 kHz; AudioGen produces 16 kHz (same as the former AudioLDM2).
 # The cache builder upsamples everything to INTERVENTION_SAMPLE_RATE (44.1 kHz).
 MUSICGEN_NATIVE_SAMPLE_RATE: Final[int] = 32_000
-AUDIOLDM2_NATIVE_SAMPLE_RATE: Final[int] = 16_000
+AUDIOGEN_NATIVE_SAMPLE_RATE: Final[int] = 16_000
+AUDIOLDM2_NATIVE_SAMPLE_RATE: Final[int] = 16_000  # Deprecated: kept for back-compat.
 
 # ---------------------------------------------------------------------------
 # Generation — prompt library
@@ -117,7 +121,7 @@ MUSIC_PROMPTS: Final[list[str]] = [
     ),
 ]
 
-# AudioLDM2 text prompts (one per soundscape variant).  All should be distant,
+# AudioGen text prompts (one per soundscape variant).  All should be distant,
 # low-energy, and free of sudden transients that might cause arousal.
 SOUNDSCAPE_PROMPTS: Final[list[str]] = [
     "gentle ocean waves at night, distant and slow, soft water sounds, no birds",

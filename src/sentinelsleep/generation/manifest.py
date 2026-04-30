@@ -6,7 +6,10 @@ validated.  It records provenance metadata and SHA-256 hashes for every clip so
 the Colab→local handoff is auditable and ``scripts/verify_cache.py`` can check
 integrity without re-running the models.
 
-Schema version: 1
+Schema version history:
+  1 — original; ``models.audioldm2`` key, ``cvssp/audioldm2`` as soundscape model.
+  2 — ``models.audioldm2`` renamed to ``models.audiogen`` (ADR-014); reader
+      accepts both 1 and 2 so old downloaded caches validate without re-gen.
 """
 
 from __future__ import annotations
@@ -20,7 +23,8 @@ from typing import Any
 
 from sentinelsleep import config
 
-MANIFEST_SCHEMA_VERSION: int = 1
+MANIFEST_SCHEMA_VERSION: int = 2
+_SUPPORTED_SCHEMA_VERSIONS: tuple[int, ...] = (1, 2)
 MANIFEST_FILENAME: str = "manifest.json"
 
 
@@ -145,7 +149,7 @@ def write_manifest(
         "git_commit": _git_commit(),
         "models": {
             "musicgen": config.MUSICGEN_MODEL_ID,
-            "audioldm2": config.AUDIOLDM2_MODEL_ID,
+            "audiogen": config.AUDIOGEN_MODEL_ID,
         },
         "fallback_used": fallback_used,
         "audio_format": {
@@ -176,7 +180,7 @@ def read_manifest(cache_dir: Path | None = None) -> dict[str, Any]:
 
     Raises:
         FileNotFoundError: If ``manifest.json`` does not exist.
-        ValueError: If ``schema_version`` is not :data:`MANIFEST_SCHEMA_VERSION`.
+        ValueError: If ``schema_version`` is not in ``_SUPPORTED_SCHEMA_VERSIONS``.
     """
     if cache_dir is None:
         cache_dir = config.AUDIO_CACHE_DIR
@@ -187,9 +191,10 @@ def read_manifest(cache_dir: Path | None = None) -> dict[str, Any]:
             "Run scripts/pregenerate_cache.py first."
         )
     data: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
-    if data.get("schema_version") != MANIFEST_SCHEMA_VERSION:
+    version = data.get("schema_version")
+    if version not in _SUPPORTED_SCHEMA_VERSIONS:
         raise ValueError(
-            f"Unsupported manifest schema_version {data.get('schema_version')!r}. "
-            f"Expected {MANIFEST_SCHEMA_VERSION}."
+            f"Unsupported manifest schema_version {version!r}. "
+            f"Supported: {_SUPPORTED_SCHEMA_VERSIONS}."
         )
     return data

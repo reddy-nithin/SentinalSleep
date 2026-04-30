@@ -1,155 +1,173 @@
-# SentinelSleep — Generating the Audio Cache on Google Colab Pro
+# SentinelSleep — Cache Generation on Google Colab
 
-The `data/audio_cache/` directory is built by `scripts/pregenerate_cache.py`, which
-loads MusicGen (~1.2 GB) and AudioLDM2 (~4 GB) sequentially.  On an M2 MacBook Air with
-8 GB unified RAM this exhausts memory and stalls.  This runbook moves that one-time build
-step to a Colab GPU while keeping the entire live pipeline (Phases 4–7) local on the M2.
+**Phase 3** pre-generates the therapeutic audio cache that the live pipeline
+plays during nightmare interventions.  Generation uses two GPU-heavy models
+that exceed the M2 8 GB local budget, so we run them on a Colab T4 once and
+download the result.
 
-**Architecture constraint preserved (CLAUDE.md #1 / ADR-003):** Generation models only
-ever run inside `pregenerate_cache.py`. The live detection loop loads only AST + wav2vec2
-(~1 GB combined) and reads cached WAVs from disk.  Moving cache generation to Colab does
-not change this constraint.
+## Why Colab?
 
----
+| Model | Size | Local M2 | Colab T4 |
+| ----- | ---- | -------- | -------- |
+| `facebook/musicgen-small` | ~1.2 GB | MPS, ~10 s/clip | CUDA, ~6 s/clip |
+| `facebook/audiogen-medium` | ~1.5 GB | Fits but slow | CUDA, ~5 s/clip |
+| Both sequential | ~2.7 GB peak | OK in theory | Easily fits in 15 GB VRAM |
 
-## Prerequisites
+The critical path during live operation reads pre-generated WAVs from disk
+(ADR-003) — generation never happens at runtime.  Colab is a one-time build.
 
-| Item | What you need |
-|------|--------------|
-| Google account | Colab Pro (free GPU quota) |
-| Repo access | Public repo, or a GitHub PAT for private clone |
-| HF token (optional) | Only if AudioLDM2 download hits rate limits — store in Colab Secrets |
+> **ADR-014:** `facebook/audiogen-medium` (Meta AudioCraft) replaced
+> `cvssp/audioldm2` as the soundscape model.  AudioGen is purpose-built for
+> environmental sounds, lighter (1.5 GB vs 4 GB), and lives in the same
+> AudioCraft library as MusicGen — one codebase, two models.
 
 ---
 
 ## Step-by-step
 
-### 1. Open the notebook in Colab
+### 0. Prerequisites
 
-Go to [colab.research.google.com](https://colab.research.google.com), then:
+- Google account with Colab access
+- Repo pushed to GitHub (`git push origin main`)
 
-**File → Open notebook → GitHub tab → paste repo URL → select `notebooks/pregenerate_on_colab.ipynb`**
+### 1. Open the notebook on Colab
 
-Or use the direct link after the repo is public:
-`https://colab.research.google.com/github/reddy-nithin/SentinalSleep/blob/main/notebooks/pregenerate_on_colab.ipynb`
+Go to [colab.research.google.com](https://colab.research.google.com), click
+**File → Open notebook → GitHub**, paste:
 
-### 2. Set the runtime to GPU
+```text
+https://github.com/reddy-nithin/SentinalSleep
+```
+
+Select `notebooks/pregenerate_on_colab.ipynb`.
+
+### 2. Switch to GPU runtime
 
 **Runtime → Change runtime type → T4 GPU → Save**
 
-> T4 is free on Colab Pro and has 15 GB VRAM — well within budget for both models.
+Verify with:
 
-### 3. (Optional) Add your HF token as a Colab Secret
-
-If you expect rate-limit issues with `cvssp/audioldm2`:
-
-1. Click the key icon (🔑) in the left sidebar
-2. Add a secret named `HF_TOKEN` with your token value
-3. Enable "Notebook access"
-
-The notebook reads this secret in Cell 3.  **Never paste the token directly into a cell.**
-
-### 4. Run all cells in order
-
-**Runtime → Run all** (or Shift+Enter through each cell)
-
-Expected runtime on T4:
-- Cell 2 (uv sync + dep install): ~3–5 min
-- Cell 4 (MusicGen + AudioLDM2 + mixing): ~10–15 min
-- Total: ~15–20 min
-
-Successful output ends with:
+```python
+import torch; print(torch.cuda.get_device_name(0))
 ```
+
+### 3. Run all cells in order
+
+| Cell | What it does | Expected time |
+| ---- | ------------ | ------------- |
+| 1 — Clone repo | `git clone`, `git checkout main` | < 30 s |
+| 2 — Install deps | pip: transformers, audiocraft, librosa, soundfile, pydub | 2–4 min |
+| 3 — HF auth | Optional; reads `HF_TOKEN` Colab secret | < 10 s |
+| 4 — Build cache | `python scripts/pregenerate_cache.py` | 8–12 min |
+| 5 — Verify | `verify_cache.py --no-sha256` | < 30 s |
+| 6 — Zip + download | Creates `audio_cache.zip`, triggers browser download | 1–2 min |
+
+**Total: ~12–18 min**
+
+### 4. Expected Cell 4 output
+
+```text
+SentinelSleep — Pre-generation Cache Builder
+=============================================================
+STEP 1 — Generating 3 music variants with MusicGen
+  [1/3] Prompt: slow calming ambient music, 60 BPM…
+  [2/3] Prompt: meditative ambient music…
+  [3/3] Prompt: peaceful ambient soundscape with soft piano…
+MusicGen unloaded — memory freed
+=============================================================
+STEP 2 — Generating 3 soundscape variants (AudioGen)
+  [1/3] Prompt: gentle ocean waves at night…
+  [2/3] Prompt: soft steady rain on leaves…
+  [3/3] Prompt: quiet forest at night…
+AudioGen unloaded — memory freed
+=============================================================
+STEP 3 — Mixing intervention clips
+  Mild variants (5): ✓
+  Severe variants (5): ✓
+=============================================================
+STEP 4 — Validating cache
+  ✓ intervention_mild_v1.wav    60.0 s  44100 Hz  16-bit
+  … (10 clips total)
 ✓ Cache build complete — all clips valid.
 Manifest written → data/audio_cache/manifest.json
 ```
 
-### 5. Download the zip
-
-Cell 6 zips `data/audio_cache/` and triggers a browser download of `audio_cache.zip`
-(~65 MB).  Save it somewhere you can find it (e.g. `~/Downloads/`).
-
----
-
-## After download — local setup
+### 5. After download — local verification
 
 ```bash
-# In your SentinalSleep repo directory:
-
-# 1. Unpack (overwrites existing empty cache dirs)
+# 1. Unpack (replace with your actual repo path)
+cd ~/SentinalSleep
 unzip -o ~/Downloads/audio_cache.zip -d data/
 
-# 2. Full integrity check — exits 0 if clean
+# 2. Full integrity check with SHA-256
 uv run python scripts/verify_cache.py
 
-# 3. Smoke-test the whole test suite
+# 3. Confirm all tests pass
 uv run pytest tests/ -q
 ```
 
-A clean `verify_cache.py` run confirms:
-- All 16 files present (3 music + 3 soundscape + 10 mixed)
-- SHA-256 hashes match the Colab-generated `manifest.json`
-- All clips are 60 s, mono, 44.1 kHz, 16-bit PCM
-
-Phase 3 is complete.  Start Phase 4 (Orchestration).
+`verify_cache.py` exits 0 → Phase 3 complete → start Phase 4 (Orchestration).
 
 ---
 
 ## Troubleshooting
 
-### AudioLDM2 OOM on Colab
+### `audiocraft` import error in Cell 4
 
-Unlikely on T4 (15 GB VRAM), but if it happens:
+Cell 2 probably did not finish cleanly.  Re-run Cell 2.  Check that
+`--no-deps` was used for the audiocraft install so pip doesn't downgrade torch.
 
-```python
-# In Cell 4, replace the command with:
-!uv run python scripts/pregenerate_cache.py --use-synthetic-soundscape
-```
+### HF rate limit (HTTP 429 or 401)
 
-This uses pink-noise fallback for soundscapes (ADR-010).  The manifest will record
-`"fallback_used": {"soundscape": true}`.  For the academic demo this is acceptable;
-for production quality, re-run on an A100 runtime.
+1. Create a free token at [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)
+2. In Colab: click the **key icon** (left sidebar) → Secrets → add `HF_TOKEN`
+3. Re-run Cell 3
 
-### Rate-limit on model download
+### AudioGen OOM
 
-Add your HF token as a Colab Secret (Step 3 above).  The token `hf_fLk...` used during
-development is stored only in your local environment — never commit it to the repo.
+Unlikely on T4 (AudioGen is only 1.5 GB).  If it happens:
 
-### Colab session disconnects mid-run
+- Switch to L4 or A100 runtime (Runtime → Change runtime type)
+- Or re-run with `--use-synthetic-soundscape` to skip AudioGen and use pink-noise
+  placeholders (weaker demo, but Phase 3 acceptance still passes)
 
-The cache build is **idempotent**: already-generated WAVs are skipped (`Skipping X — already exists`).
-Simply reconnect and re-run from Cell 4.  If music is done but soundscapes are not:
+### `verify_cache.py` reports missing files
 
-```python
-!uv run python scripts/pregenerate_cache.py --skip-music
-```
-
-### verify_cache.py reports SHA-256 mismatch
-
-This means the downloaded zip was corrupted in transit.  Re-download from Colab
-(Cell 6) and unpack again.
-
----
-
-## Re-generating after prompt changes
-
-If you change `config.MUSIC_PROMPTS` or `config.SOUNDSCAPE_PROMPTS`:
+Re-run Cell 4 with skip flags to regenerate only the missing step:
 
 ```bash
-# Delete stale clips for the categories you changed, then re-run:
-rm data/audio_cache/music/*.wav   # or soundscape/*.wav
-uv run python scripts/pregenerate_cache.py --skip-soundscapes  # regenerate music only
+# Only re-run the mixer (music + soundscapes already generated)
+!python scripts/pregenerate_cache.py --skip-music --skip-soundscapes
+
+# Only regenerate soundscapes (music already generated)
+!python scripts/pregenerate_cache.py --skip-music
 ```
 
-Or run the full Colab notebook again from scratch.
+### Download fails in Cell 6
+
+Use the Files panel (folder icon in left sidebar).  Navigate to
+`SentinalSleep/audio_cache.zip` and click the ⋮ menu → Download.
 
 ---
 
-## What this does NOT affect
+## What gets downloaded
 
-| Concern | Status |
-|---------|--------|
-| Live detection loop | Unchanged — AST + wav2vec2 only, no generation models |
-| Phase 4–7 development | Fully local on M2 |
-| Offline demo guarantee | Cache is on disk; no internet required at demo time |
-| Test suite | All 99+ tests still run locally (`uv run pytest tests/`) |
+```text
+audio_cache.zip (~65 MB)
+└── data/audio_cache/
+    ├── music/
+    │   ├── ambient_60bpm_low_v1.wav      (60 s, 44.1 kHz, 16-bit)
+    │   ├── meditative_ambient_v2.wav
+    │   └── piano_ambient_v3.wav
+    ├── soundscape/
+    │   ├── ocean_gentle_v1.wav
+    │   ├── rain_soft_v1.wav
+    │   └── forest_night_v1.wav
+    ├── mixed/
+    │   ├── intervention_mild_v1.wav … v5.wav
+    │   └── intervention_severe_v1.wav … v5.wav
+    └── manifest.json                     (provenance + SHA-256 hashes)
+```
+
+16 WAV files total.  The manifest records the git commit, device, model ids,
+and per-clip SHA-256 digests for `verify_cache.py` to check.

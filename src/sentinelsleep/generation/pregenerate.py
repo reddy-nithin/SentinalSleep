@@ -6,7 +6,7 @@ that the live pipeline will play during nightmare interventions.
 Execution order (enforced to respect M2 8 GB memory budget — ADR-003):
 
     1. Load MusicGen → generate ``MUSIC_VARIANTS_COUNT`` music clips → unload
-    2. Load AudioLDM2 → generate ``SOUNDSCAPE_VARIANTS_COUNT`` soundscape clips → unload
+    2. Load AudioGen → generate ``SOUNDSCAPE_VARIANTS_COUNT`` soundscape clips → unload
     3. Mix all combinations into mild + severe intervention clips
 
 Only one large model is resident in memory at a time.
@@ -43,7 +43,7 @@ import soundfile as sf
 from scipy import signal
 
 from sentinelsleep import config
-from sentinelsleep.generation.audioldm2_wrapper import AudioLDM2LoadError
+from sentinelsleep.generation.audiogen_wrapper import AudioGenLoadError
 from sentinelsleep.generation.manifest import write_manifest as _write_manifest
 from sentinelsleep.generation.mixer import create_mild_variant, create_severe_variant, validate_cache_clip
 
@@ -86,7 +86,7 @@ def _mixed_filename(profile: str, variant_num: int) -> str:
 def _synthesize_soundscape_fallback(output_path: Path, prompt_tag: str) -> Path:
     """Write a low-amplitude band-limited pink-noise WAV as a soundscape placeholder.
 
-    Used when AudioLDM2 cannot load (OOM) or when ``use_synthetic_soundscape``
+    Used when AudioGen cannot load (OOM) or when ``use_synthetic_soundscape``
     is requested. Output matches intervention cache format: mono, 44.1 kHz,
     16-bit PCM, ``INTERVENTION_DURATION_SECONDS`` long. Deterministic per
     ``prompt_tag`` seed so re-runs produce identical files.
@@ -174,20 +174,20 @@ def _generate_music() -> list[Path]:
 
 
 def _generate_soundscapes(*, use_synthetic: bool = False) -> tuple[list[Path], bool]:
-    """Load AudioLDM2, generate all soundscape variants, unload, return paths.
+    """Load AudioGen, generate all soundscape variants, unload, return paths.
 
-    If ``use_synthetic`` is True, skips AudioLDM2 and writes synthetic placeholders
+    If ``use_synthetic`` is True, skips AudioGen and writes synthetic placeholders
     for any missing expected files (ADR-010).
 
-    On ``AudioLDM2LoadError`` (e.g. OOM on M2 8 GB), fills any missing expected
+    On ``AudioGenLoadError`` (e.g. OOM or audiocraft not installed), fills any missing
     files with the same synthetic fallback so mixing can complete.
 
     Returns:
         Tuple of (ordered list of Paths, fallback_used flag).  ``fallback_used``
         is ``True`` when synthetic pink-noise placeholders were written instead of
-        real AudioLDM2 output.
+        real AudioGen output.
     """
-    from sentinelsleep.generation.audioldm2_wrapper import AudioLDM2Wrapper
+    from sentinelsleep.generation.audiogen_wrapper import AudioGenWrapper
 
     all_expected = [
         config.SOUNDSCAPE_CACHE_DIR / _soundscape_filename(i)
@@ -198,12 +198,12 @@ def _generate_soundscapes(*, use_synthetic: bool = False) -> tuple[list[Path], b
     logger.info(
         "STEP 2 — Generating %d soundscape variants (%s)",
         config.SOUNDSCAPE_VARIANTS_COUNT,
-        "synthetic placeholder" if use_synthetic else "AudioLDM2",
+        "synthetic placeholder" if use_synthetic else "AudioGen",
     )
     logger.info("=" * 60)
 
     if all(p.exists() for p in all_expected):
-        logger.info("All soundscape clips already cached — skipping AudioLDM2 load")
+        logger.info("All soundscape clips already cached — skipping AudioGen load")
         return all_expected, False
 
     if use_synthetic:
@@ -220,11 +220,11 @@ def _generate_soundscapes(*, use_synthetic: bool = False) -> tuple[list[Path], b
         return all_expected, True
 
     try:
-        gen = AudioLDM2Wrapper()
-    except AudioLDM2LoadError as exc:
+        gen = AudioGenWrapper()
+    except AudioGenLoadError as exc:
         logger.error("%s", exc)
         logger.warning(
-            "AudioLDM2 unavailable — applying synthetic soundscape fallback for "
+            "AudioGen unavailable — applying synthetic soundscape fallback for "
             "missing files (ADR-010). Replace with real WAVs in %s if desired.",
             config.SOUNDSCAPE_CACHE_DIR,
         )
@@ -407,7 +407,7 @@ def build_cache(
     Runs all three generation steps in sequence with correct memory management:
 
     1. MusicGen (loaded, generates music, unloaded)
-    2. AudioLDM2 (loaded, generates soundscapes, unloaded) — or synthetic fallback
+    2. AudioGen (loaded, generates soundscapes, unloaded) — or synthetic fallback
     3. Mixer (CPU-only pydub; no ML model required)
 
     Steps can be individually skipped when re-running after a partial failure
@@ -415,9 +415,9 @@ def build_cache(
 
     Args:
         skip_music:       Skip Step 1 (MusicGen).
-        skip_soundscapes: Skip Step 2 (AudioLDM2).
+        skip_soundscapes: Skip Step 2 (AudioGen).
         skip_mixing:      Skip Step 3 (Mixer).
-        use_synthetic_soundscape: If True, never load AudioLDM2; write synthetic
+        use_synthetic_soundscape: If True, never load AudioGen; write synthetic
             placeholders for missing soundscapes (ADR-010).
         write_manifest:   If True (default), write ``data/audio_cache/manifest.json``
             after validation passes (ADR-013).

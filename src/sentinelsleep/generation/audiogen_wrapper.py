@@ -1,19 +1,27 @@
-"""AudioLDM2 wrapper — DEPRECATED (ADR-014).
+"""AudioGen wrapper for generating therapeutic nature soundscapes.
 
-Superseded by :mod:`sentinelsleep.generation.audiogen_wrapper` which uses
-``facebook/audiogen-medium`` (Meta AudioCraft).  AudioGen is lighter (~1.5 GB
-vs 4 GB), purpose-built for environmental sound effects, and lives in the same
-AudioCraft library as MusicGen.
+This module wraps ``facebook/audiogen-medium`` (Meta AudioCraft) to produce
+60-second ambient nature soundscapes from text prompts.  Generated audio is
+written to ``data/audio_cache/soundscape/`` by the pre-generation script.
 
-This module is kept to preserve back-compatibility with manifest.json files
-written under schema version 1 (which record ``cvssp/audioldm2`` as the
-soundscape model id).  Do NOT use this wrapper in new code.  The
-``AUDIOLDM2_MODEL_ID`` constant in ``config.py`` is also kept for the same
-back-compat reason.
+This replaces ``audioldm2_wrapper.py`` (deprecated in ADR-014).  AudioGen
+is purpose-built for environmental sound effects, lives in the same AudioCraft
+library as MusicGen (fewer moving parts), and is lighter (~1.5 GB vs 4 GB).
 
-Original purpose (historical):
-    Wrapped ``cvssp/audioldm2`` to produce 60-second ambient nature soundscapes.
-    Required diffusers>=0.30, ~4 GB RAM, 200 diffusion steps per clip.
+**Memory discipline (ADR-003):**
+This wrapper is ONLY used by ``pregenerate.py``.  It is NEVER imported or
+loaded during the live detection/verification loop.  Load only after MusicGen
+has been unloaded.
+
+Usage::
+
+    gen = AudioGenWrapper()
+    gen.generate_to_file(
+        prompt="gentle ocean waves at night",
+        output_path=Path("data/audio_cache/soundscape/ocean_gentle_v1.wav"),
+        duration_s=60,
+    )
+    gen.unload()
 """
 
 from __future__ import annotations
@@ -32,69 +40,71 @@ logger = logging.getLogger(__name__)
 DEFAULT_PROMPT = config.SOUNDSCAPE_PROMPTS[0]
 
 
-class AudioLDM2LoadError(RuntimeError):
-    """Raised when AudioLDM2 cannot be loaded (typically OOM on M2 8 GB).
+class AudioGenLoadError(RuntimeError):
+    """Raised when AudioGen cannot be loaded (e.g. OOM or missing audiocraft).
 
     Read the message for fallback instructions.
     """
 
 
-class AudioLDM2Wrapper:
-    """Wraps cvssp/audioldm2 for text-to-audio soundscape generation.
+class AudioGenWrapper:
+    """Wraps facebook/audiogen-medium for text-to-audio soundscape generation.
 
     Downloads the model on first use and caches it in the HuggingFace cache
     directory (``~/.cache/huggingface/``).
 
-    Memory footprint: ~4 GB.  **Load only after MusicGen is unloaded.**
+    Memory footprint: ~1.5 GB.  **Load only after MusicGen is unloaded.**
     **Always call** :meth:`unload` when generation is complete.
 
     Attributes:
-        device: Torch device string (``\"mps\"`` or ``\"cpu\"``).
+        device: Torch device string (``"mps"``, ``"cuda"``, or ``"cpu"``).
     """
 
     def __init__(
         self,
-        model_id: str = config.AUDIOLDM2_MODEL_ID,
+        model_id: str = config.AUDIOGEN_MODEL_ID,
         device: str | None = None,
     ) -> None:
-        """Load the AudioLDM2 pipeline.
+        """Load the AudioGen model.
 
         Args:
-            model_id: HuggingFace model identifier.
+            model_id: AudioCraft model identifier (e.g. ``"facebook/audiogen-medium"``).
             device: Torch device.  Defaults to ``config.select_device()``.
 
         Raises:
-            AudioLDM2LoadError: If the model cannot be loaded (e.g., OOM).
+            AudioGenLoadError: If the model cannot be loaded (e.g., OOM or
+                ``audiocraft`` is not installed).
         """
-        import torch
-        from diffusers import AudioLDM2Pipeline
-
         self.device = device or config.select_device()
-        logger.info("Loading AudioLDM2 pipeline %s on device=%s", model_id, self.device)
+        logger.info("Loading AudioGen model %s on device=%s", model_id, self.device)
 
         try:
-            self._pipe = AudioLDM2Pipeline.from_pretrained(
-                model_id,
-                torch_dtype=torch.float32,  # MPS requires float32
-            )
-            self._pipe = self._pipe.to(self.device)
-        except (RuntimeError, Exception) as exc:
+            from audiocraft.models import AudioGen  # noqa: PLC0415
+
+            self._model = AudioGen.get_pretrained(model_id)
+            # Move to target device; AudioCraft models have a ``to`` method.
+            self._model.to(self.device)
+        except Exception as exc:
             _msg = (
-                f"AudioLDM2 failed to load on device={self.device!r}: {exc}\n\n"
-                "This is likely an out-of-memory error on M2 8 GB RAM.\n"
+                f"AudioGen failed to load on device={self.device!r}: {exc}\n\n"
+                "Possible causes:\n"
+                "  • audiocraft not installed: add it to pyproject.toml and run uv sync\n"
+                "  • Out of memory on M2 8 GB: run pregenerate_cache.py on Colab T4\n"
+                "    (see notebooks/pregenerate_on_colab.ipynb)\n"
+                "  • Model download failed: check network and HF_TOKEN if rate-limited\n\n"
                 "Fallback options:\n"
-                "  1. Pre-generate on GCP: see SENTINELSLEEP_PLAN.md §14.\n"
+                "  1. Re-run with --use-synthetic-soundscape for pink-noise placeholders\n"
                 "  2. Download royalty-free WAVs from Freesound and place them in\n"
                 "     data/audio_cache/soundscape/ manually, then re-run the mixer.\n"
                 "     Required filenames: ocean_gentle_v1.wav, rain_soft_v1.wav,\n"
                 "     forest_night_v1.wav  (each ≥ 60 s, mono, any sample rate)."
             )
-            raise AudioLDM2LoadError(_msg) from exc
+            raise AudioGenLoadError(_msg) from exc
 
-        self._torch = torch
-        self._native_sr: int = 16_000  # AudioLDM2 outputs at 16 kHz
+        # AudioGen outputs at 16 kHz (same as AudioLDM2; resample path unchanged).
+        self._native_sr: int = 16_000
         logger.info(
-            "AudioLDM2 loaded on device=%s, native_sr=%d Hz",
+            "AudioGen loaded on device=%s, native_sr=%d Hz",
             self.device,
             self._native_sr,
         )
@@ -107,18 +117,12 @@ class AudioLDM2Wrapper:
         self,
         prompt: str = DEFAULT_PROMPT,
         duration_s: float = float(config.INTERVENTION_DURATION_SECONDS),
-        num_inference_steps: int = 200,
-        guidance_scale: float = 3.5,
     ) -> tuple[np.ndarray, int]:
         """Generate a nature soundscape from a text prompt.
 
         Args:
-            prompt:               Text prompt describing the soundscape.
-            duration_s:           Target duration in seconds.
-            num_inference_steps:  Diffusion steps — fewer is faster but lower quality.
-                                  200 is the recommended default for AudioLDM2.
-            guidance_scale:       Classifier-free guidance scale.  3.5–4.0 works well
-                                  for ambient sounds.
+            prompt:     Text prompt describing the desired soundscape.
+            duration_s: Target duration in seconds.
 
         Returns:
             ``(audio_array, sample_rate)`` where ``audio_array`` is a 1-D
@@ -128,16 +132,12 @@ class AudioLDM2Wrapper:
             "Generating %.0fs soundscape — prompt: %.80s…", duration_s, prompt
         )
 
-        result = self._pipe(
-            prompt,
-            num_inference_steps=num_inference_steps,
-            audio_length_in_s=duration_s,
-            guidance_scale=guidance_scale,
-            num_waveforms_per_prompt=1,
-        )
+        self._model.set_generation_params(duration=duration_s)
+        # generate() returns a tensor of shape (batch, channels, samples).
+        wav = self._model.generate(descriptions=[prompt])
 
-        # result.audios shape: (batch, samples) — take first waveform
-        audio: np.ndarray = result.audios[0].astype(np.float32)
+        # Take first item in batch, first channel → 1-D numpy float32.
+        audio: np.ndarray = wav[0, 0].cpu().numpy().astype(np.float32)
         logger.info(
             "Generated %.2f s of soundscape at %d Hz (%d samples)",
             len(audio) / self._native_sr,
@@ -152,8 +152,6 @@ class AudioLDM2Wrapper:
         prompt: str = DEFAULT_PROMPT,
         duration_s: float = float(config.INTERVENTION_DURATION_SECONDS),
         target_sr: int = config.INTERVENTION_SAMPLE_RATE,
-        num_inference_steps: int = 200,
-        guidance_scale: float = 3.5,
     ) -> Path:
         """Generate a soundscape and write to a WAV file at ``target_sr``.
 
@@ -162,9 +160,7 @@ class AudioLDM2Wrapper:
                 created if they don't exist.
             prompt:      Text prompt for generation.
             duration_s:  Target clip duration in seconds.
-            target_sr:   Output sample rate in Hz.
-            num_inference_steps: Diffusion steps.
-            guidance_scale:      CFG scale.
+            target_sr:   Output sample rate in Hz (default: 44 100 Hz).
 
         Returns:
             Resolved path to the written WAV file.
@@ -174,12 +170,7 @@ class AudioLDM2Wrapper:
         output_path = Path(output_path)
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
-        audio, native_sr = self.generate(
-            prompt=prompt,
-            duration_s=duration_s,
-            num_inference_steps=num_inference_steps,
-            guidance_scale=guidance_scale,
-        )
+        audio, native_sr = self.generate(prompt=prompt, duration_s=duration_s)
 
         if native_sr != target_sr:
             logger.info(
@@ -205,17 +196,19 @@ class AudioLDM2Wrapper:
         return output_path.resolve()
 
     def unload(self) -> None:
-        """Unload the pipeline from memory.
+        """Unload the model from memory.
 
-        Call this immediately after generation to free ~4 GB.  After calling
+        Call this immediately after generation to free ~1.5 GB.  After calling
         this the instance must not be used again.
         """
         import torch  # noqa: PLC0415
 
-        logger.info("Unloading AudioLDM2 pipeline from memory")
-        del self._pipe
-        self._pipe = None  # type: ignore[assignment]
+        logger.info("Unloading AudioGen model from memory")
+        del self._model
+        self._model = None  # type: ignore[assignment]
         gc.collect()
         if torch.backends.mps.is_available():
             torch.mps.empty_cache()
-        logger.info("AudioLDM2 unloaded — memory freed")
+        elif torch.cuda.is_available():
+            torch.cuda.empty_cache()
+        logger.info("AudioGen unloaded — memory freed")

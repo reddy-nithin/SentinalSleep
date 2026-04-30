@@ -13,7 +13,12 @@ dependencies = [
     "torchaudio>=2.5.0",
     "transformers>=4.46.0",
     "accelerate>=1.0.0",
-    "diffusers>=0.30.0",
+    # audiocraft is intentionally NOT listed here: its PyPI release pins torchaudio<2.1.2
+    # which conflicts with our torchaudio>=2.5.0.  The Colab pregenerate notebook installs
+    # it directly with pip after torch is already installed (see notebooks/pregenerate_on_colab.ipynb).
+    # AudioGenWrapper imports it lazily and raises AudioGenLoadError if not present, so local
+    # development (which uses the synthetic fallback) is unaffected.
+    "diffusers>=0.30.0",       # Kept for audioldm2_wrapper.py back-compat (deprecated ADR-014)
     "scipy>=1.13.0",
     "librosa>=0.10.2",
 

@@ -1,6 +1,6 @@
 """Unit tests for ``generation.pregenerate`` helpers and ``build_cache`` skips.
 
-No MusicGen / AudioLDM2 loads.
+No MusicGen / AudioGen loads.
 """
 
 from __future__ import annotations
