@@ -32,7 +32,7 @@ Bedroom mic → [Layer 1: Detection] → DSS > 0.4?
 | Detection | `MIT/ast-finetuned-audioset-10-10-0.4593` | 527-class AudioSet sound classifier |
 | Verification | `audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim` | Valence / arousal / dominance |
 | Music gen | `facebook/musicgen-small` | 60 BPM ambient sleep music (pre-cached) |
-| Soundscape gen | `cvssp/audioldm2` | Nature soundscapes (pre-cached) |
+| Soundscape gen | `facebook/audiogen-medium` | Nature soundscapes (pre-cached) |
 
 **Memory budget (M2 8GB):** Only detection + verification models are
 resident during the live loop (~1GB combined). Generation models run
@@ -85,10 +85,10 @@ uv run streamlit run scripts/run_dashboard.py
 | 1 | Detection Layer (AST + DSS) | ✅ Complete |
 | 2 | Verification Layer (wav2vec2) | ✅ Complete |
 | 3 | Generation Layer (cache builder) | ✅ Complete |
-| 4 | Orchestration (state machine + event log) | ⬜ Pending |
-| 5 | Dashboard (Streamlit) | ⬜ Pending |
-| 6 | Demo Mode (simulator) | ⬜ Pending |
-| 7 | Polish & Presentation | ⬜ Pending |
+| 4 | Orchestration (state machine + event log) | ✅ Complete |
+| 5 | Dashboard (Streamlit) | ✅ Complete |
+| 6 | Demo Mode (simulator) | ✅ Complete |
+| 7 | Polish & Presentation | ✅ Complete |
 
 ---
 
