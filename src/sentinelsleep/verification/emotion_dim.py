@@ -84,6 +84,11 @@ class EmotionModel(Wav2Vec2PreTrainedModel):
         self.classifier = RegressionHead(model_config)
         self.init_weights()
 
+    @property
+    def all_tied_weights_keys(self):
+        """Mock property for transformers 4.46+ compatibility."""
+        return {}
+
     def forward(
         self,
         input_values: torch.Tensor,
