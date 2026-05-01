@@ -1,77 +1,111 @@
-"""Streamlit application entry point for the SentinelSleep Morning Dashboard.
+"""SentinelSleep Morning Dashboard — Whoop-style dark UI entry point."""
 
-Displays views based on read-only SQLite queries.
-"""
+from __future__ import annotations
 
 import sys
 from pathlib import Path
 
-# Ensure src is in path so 'sentinelsleep' can be imported by the app when run via streamlit
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 
 import streamlit as st
 
 from sentinelsleep.dashboard import queries
+from sentinelsleep.dashboard.theme import PALETTE, apply_global_css
 from sentinelsleep.dashboard.views.interventions import render_interventions_table
-from sentinelsleep.dashboard.views.timeline import render_timeline
+from sentinelsleep.dashboard.views.night_detail import render_night_detail
+from sentinelsleep.dashboard.views.overview import render_overview
 from sentinelsleep.dashboard.views.trends import render_trends
-from sentinelsleep.dashboard.views.waveform import render_waveform
 
 
 def main() -> None:
     st.set_page_config(
-        page_title="SentinelSleep Dashboard",
+        page_title="SentinelSleep",
         page_icon="🌙",
         layout="wide",
+        initial_sidebar_state="expanded",
     )
+    apply_global_css()
 
-    st.title("SentinelSleep Morning Dashboard")
-    st.markdown("Review nighttime events, distress scores, and intervention effectiveness.")
+    # ── Sidebar ───────────────────────────────────────────────────────────────
+    with st.sidebar:
+        st.markdown(
+            f"""
+            <div style="padding:8px 0 20px 0;">
+              <div style="font-size:1.2rem;font-weight:800;color:{PALETTE['text']};letter-spacing:-0.02em;">
+                🌙 SentinelSleep
+              </div>
+              <div style="font-size:0.72rem;color:{PALETTE['text_dim']};margin-top:2px;">
+                PTSD Nightmare Monitoring
+              </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-    # Sidebar: Session selection
-    st.sidebar.header("Navigation")
-    sessions = queries.get_sessions()
-    
-    if not sessions:
-        st.info("No data available. Run the live pipeline or seed synthetic events first.")
+        page = st.radio(
+            "Navigate",
+            ["Overview", "Night Detail", "Interventions", "Trends"],
+            label_visibility="collapsed",
+        )
+
+        st.divider()
+
+        sessions = queries.get_sessions()
+        if not sessions:
+            st.info("No data. Run the simulation or seed synthetic events first.")
+            st.code("uv run python scripts/seed_synthetic_events.py")
+            return
+
+        session_opts = {
+            s["id"]: f"{str(s['started_at'])[:10]}  (#{s['id']})"
+            for s in sessions
+        }
+        selected_id = st.selectbox(
+            "Night",
+            options=list(session_opts.keys()),
+            format_func=lambda x: session_opts[x],
+        )
+
+        st.divider()
+        trends_data = queries.get_trends(window_days=7)
+        st.markdown(
+            '<div class="ss-kpi-label">7-DAY SUMMARY</div>',
+            unsafe_allow_html=True,
+        )
+        st.metric("Sessions", trends_data["total_sessions"])
+        st.metric("Interventions", trends_data["total_interventions"])
+        st.metric("Effectiveness", f"{trends_data['effective_rate_percent']:.0f}%")
+
+    if selected_id is None:
         return
 
-    session_opts = {s["id"]: f"Session {s['id']} ({str(s['started_at'])[:10]})" for s in sessions}
-    selected_session_id = st.sidebar.selectbox(
-        "Select Session",
-        options=list(session_opts.keys()),
-        format_func=lambda x: session_opts[x]
-    )
+    # ── Per-session data ──────────────────────────────────────────────────────
+    events = queries.get_events_for_session(selected_id)
+    timeseries = queries.get_dss_timeseries(selected_id)
+    interventions = queries.get_interventions(window_days=90)
+    # Filter interventions to the selected session
+    session_interventions = [i for i in interventions if i["session_id"] == selected_id]
 
-    # Sidebar: Global trends
-    st.sidebar.divider()
-    trends = queries.get_trends(window_days=7)
-    render_trends(trends)
+    session_label = session_opts[selected_id]
 
-    if selected_session_id is not None:
-        # Fetch data for selected session
-        events = queries.get_events_for_session(selected_session_id)
-        timeseries = queries.get_dss_timeseries(selected_session_id)
-        
-        # We also want to show recent interventions globally (or just for this session)
-        # We'll show global recent interventions at the bottom
-        recent_interventions = queries.get_interventions(window_days=7)
+    # ── Page routing ──────────────────────────────────────────────────────────
+    if page == "Overview":
+        render_overview(
+            events=events,
+            interventions=session_interventions,
+            session_label=session_label,
+            all_sessions=sessions,
+            trends=trends_data,
+        )
 
-        # Render Main Views
-        st.header(f"Session Details: {session_opts[selected_session_id]}")
-        
-        # 1. Timeline View
-        render_timeline(events)
-        
-        st.divider()
-        
-        # 2. Waveform View
-        render_waveform(timeseries)
-        
-        st.divider()
-        
-        # 3. Interventions View
-        render_interventions_table(recent_interventions)
+    elif page == "Night Detail":
+        render_night_detail(events=events, timeseries=timeseries)
+
+    elif page == "Interventions":
+        render_interventions_table(session_interventions)
+
+    elif page == "Trends":
+        render_trends(trends_data)
 
 
 if __name__ == "__main__":
