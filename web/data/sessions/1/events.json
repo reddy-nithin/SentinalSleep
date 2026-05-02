@@ -1,0 +1,16 @@
+[
+  {"id":1,"session_id":1,"timestamp":"2026-05-01T22:00:00","state":"listening","dss":0.04,"valence":null,"arousal":null,"dominance":null,"intervention_clip":null},
+  {"id":2,"session_id":1,"timestamp":"2026-05-01T22:30:00","state":"listening","dss":0.07,"valence":null,"arousal":null,"dominance":null,"intervention_clip":null},
+  {"id":3,"session_id":1,"timestamp":"2026-05-01T23:00:00","state":"listening","dss":0.05,"valence":null,"arousal":null,"dominance":null,"intervention_clip":null},
+  {"id":4,"session_id":1,"timestamp":"2026-05-02T00:00:00","state":"listening","dss":0.06,"valence":null,"arousal":null,"dominance":null,"intervention_clip":null},
+  {"id":5,"session_id":1,"timestamp":"2026-05-02T01:30:00","state":"flagged","dss":0.42,"valence":0.28,"arousal":0.71,"dominance":0.31,"intervention_clip":null},
+  {"id":6,"session_id":1,"timestamp":"2026-05-02T01:45:00","state":"intervening","dss":0.71,"valence":0.18,"arousal":0.82,"dominance":0.22,"intervention_clip":"calm_ocean_waves.wav"},
+  {"id":7,"session_id":1,"timestamp":"2026-05-02T01:48:00","state":"resolved","dss":0.28,"valence":0.55,"arousal":0.34,"dominance":0.48,"intervention_clip":null},
+  {"id":8,"session_id":1,"timestamp":"2026-05-02T02:00:00","state":"listening","dss":0.08,"valence":null,"arousal":null,"dominance":null,"intervention_clip":null},
+  {"id":9,"session_id":1,"timestamp":"2026-05-02T03:00:00","state":"flagged","dss":0.48,"valence":0.22,"arousal":0.77,"dominance":0.28,"intervention_clip":null},
+  {"id":10,"session_id":1,"timestamp":"2026-05-02T03:10:00","state":"intervening","dss":0.63,"valence":0.14,"arousal":0.86,"dominance":0.19,"intervention_clip":"forest_rain_ambient.wav"},
+  {"id":11,"session_id":1,"timestamp":"2026-05-02T03:13:00","state":"resolved","dss":0.21,"valence":0.61,"arousal":0.29,"dominance":0.52,"intervention_clip":null},
+  {"id":12,"session_id":1,"timestamp":"2026-05-02T04:00:00","state":"listening","dss":0.05,"valence":null,"arousal":null,"dominance":null,"intervention_clip":null},
+  {"id":13,"session_id":1,"timestamp":"2026-05-02T05:00:00","state":"listening","dss":0.03,"valence":null,"arousal":null,"dominance":null,"intervention_clip":null},
+  {"id":14,"session_id":1,"timestamp":"2026-05-02T05:23:47","state":"awake","dss":null,"valence":null,"arousal":null,"dominance":null,"intervention_clip":null}
+]
