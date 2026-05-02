@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { LayoutDashboard, Moon, Zap, TrendingUp } from "lucide-react";
 import { getSessions, getTrends } from "@/lib/data";
+import { DashboardTransition } from "./DashboardTransition";
 
 const navItems = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
@@ -68,7 +69,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </aside>
 
       {/* Main */}
-      <main className="flex-1 min-w-0">{children}</main>
+      <main className="flex-1 min-w-0">
+        <DashboardTransition>{children}</DashboardTransition>
+      </main>
     </div>
   );
 }

@@ -56,6 +56,11 @@ export interface TrendData {
   disturbances_per_night: number[];
   effectiveness_by_night: number[];
   dates: string[];
+  state_minutes_per_night?: {
+    listening: number[];
+    flagged: number[];
+    intervening: number[];
+  };
 }
 
 export interface Manifest {
