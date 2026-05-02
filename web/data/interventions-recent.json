@@ -3,7 +3,7 @@
     "id": 1, "event_id": 3, "session_id": 1,
     "started_at": "2026-05-02T01:47:32",
     "ended_at": "2026-05-02T01:48:32",
-    "clip_path": "calm_ocean_waves.wav",
+    "clip_path": "intervention_severe_v1.wav",
     "pre_dss": 0.71,
     "post_dss": 0.28,
     "effective": true
@@ -12,7 +12,7 @@
     "id": 2, "event_id": 7, "session_id": 1,
     "started_at": "2026-05-02T03:12:18",
     "ended_at": "2026-05-02T03:13:18",
-    "clip_path": "forest_rain_ambient.wav",
+    "clip_path": "ocean_gentle_v1.wav",
     "pre_dss": 0.63,
     "post_dss": 0.21,
     "effective": true
