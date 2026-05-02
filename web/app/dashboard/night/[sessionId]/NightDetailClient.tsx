@@ -8,6 +8,7 @@ import { DssWaveform } from "@/components/charts/DssWaveform";
 import { StateRibbon } from "@/components/charts/StateRibbon";
 import { buildSegments } from "@/lib/segments";
 import { ReplayController } from "@/components/dashboard/ReplayController";
+import { InterventionCard } from "@/components/dashboard/InterventionCard";
 import { formatDate, formatDuration } from "@/lib/time";
 import type { NightData } from "@/lib/data";
 
@@ -156,6 +157,26 @@ export function NightDetailClient({ data }: { data: NightData }) {
           ))}
         </div>
       </motion.div>
+
+      {/* Intervention clips */}
+      {interventions.length > 0 && (
+        <motion.div custom={5} initial="hidden" animate="visible" variants={fadeUp}>
+          <h2 className="ss-section-label mb-3">Intervention Clips</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {interventions.map((inv) => (
+              <InterventionCard
+                key={inv.id}
+                startedAt={inv.started_at}
+                preDss={inv.pre_dss}
+                postDss={inv.post_dss}
+                effective={inv.effective}
+                clipName={inv.clip_path}
+                audioUrl={inv.clip_path ? `/audio/${inv.clip_path}` : undefined}
+              />
+            ))}
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 }

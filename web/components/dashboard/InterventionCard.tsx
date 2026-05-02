@@ -64,6 +64,7 @@ export function InterventionCard({
 }: InterventionCardProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
+  const [audioError, setAudioError] = useState(false);
 
   const delta = postDss !== null ? postDss - preDss : null;
   const improved = delta !== null && delta < 0;
@@ -126,7 +127,7 @@ export function InterventionCard({
         <div className="flex items-center gap-3 bg-surface-alt rounded-lg px-3 py-2">
           <Music className="w-4 h-4 text-text-dim flex-shrink-0" />
           <span className="font-mono text-xs text-text-dim truncate flex-1">{clipName}</span>
-          {audioUrl && (
+          {audioUrl && !audioError && (
             <button
               onClick={togglePlay}
               className="flex-shrink-0 w-7 h-7 rounded-full bg-mint/15 hover:bg-mint/25 flex items-center justify-center text-mint transition-colors"
@@ -134,8 +135,17 @@ export function InterventionCard({
               {playing ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
             </button>
           )}
+          {audioUrl && audioError && (
+            <span className="text-[10px] text-text-dim">No audio</span>
+          )}
           {audioUrl && (
-            <audio ref={audioRef} src={audioUrl} onEnded={() => setPlaying(false)} className="hidden" />
+            <audio
+              ref={audioRef}
+              src={audioUrl}
+              onEnded={() => setPlaying(false)}
+              onError={() => setAudioError(true)}
+              className="hidden"
+            />
           )}
         </div>
       )}
