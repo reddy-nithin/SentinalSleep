@@ -1,18 +1,17 @@
-"""Read-only SQLite queries for the Phase 5 Morning Dashboard.
+"""Read-only SQLite queries for the SentinelSleep event log.
 
-This module is the **only place** the dashboard may execute SQL.
-It strictly enforces the read-only constraint (CLAUDE.md #4).
+Single source of truth for all read-only SQL.  Enforces the constraint from
+CLAUDE.md §4: nothing here writes to the database.
 
 Usage::
 
-    from sentinelsleep.dashboard import queries
+    from sentinelsleep.db import queries
 
     sessions = queries.get_sessions()
-    events = queries.get_events_for_session(session_id)
+    events   = queries.get_events_for_session(session_id)
 
 All queries use parameterized SQL to prevent injection.
-Results are returned as a list of `sqlite3.Row` objects, which behave
-like dictionaries.
+Results are returned as a list of ``sqlite3.Row`` objects (behave like dicts).
 """
 
 from __future__ import annotations
@@ -42,7 +41,7 @@ def get_sessions(
                FROM sessions
                ORDER BY started_at DESC
                LIMIT ?""",
-            (limit,)
+            (limit,),
         ).fetchall()
 
 
@@ -50,7 +49,7 @@ def get_events_for_session(
     session_id: int,
     db_path: Path | None = None,
 ) -> list[sqlite3.Row]:
-    """Return all events for a specific session, ordered by timestamp."""
+    """Return all events for a session, ordered by timestamp."""
     db_path = db_path or config.EVENTS_DB_PATH
     with get_connection(db_path) as conn:
         return conn.execute(
@@ -59,7 +58,7 @@ def get_events_for_session(
                LEFT JOIN interventions i ON i.event_id = e.id
                WHERE e.session_id = ?
                ORDER BY e.timestamp ASC""",
-            (session_id,)
+            (session_id,),
         ).fetchall()
 
 
@@ -77,7 +76,24 @@ def get_interventions(
                JOIN events e ON i.event_id = e.id
                WHERE e.timestamp >= ?
                ORDER BY e.timestamp DESC""",
-            (cutoff,)
+            (cutoff,),
+        ).fetchall()
+
+
+def get_interventions_for_session(
+    session_id: int,
+    db_path: Path | None = None,
+) -> list[sqlite3.Row]:
+    """Return all interventions for a specific session, ordered by start time."""
+    db_path = db_path or config.EVENTS_DB_PATH
+    with get_connection(db_path) as conn:
+        return conn.execute(
+            """SELECT i.*, e.timestamp, e.dss
+               FROM interventions i
+               JOIN events e ON i.event_id = e.id
+               WHERE e.session_id = ?
+               ORDER BY i.started_at ASC""",
+            (session_id,),
         ).fetchall()
 
 
@@ -93,7 +109,7 @@ def get_dss_timeseries(
                FROM events
                WHERE session_id = ? AND dss IS NOT NULL
                ORDER BY timestamp ASC""",
-            (session_id,)
+            (session_id,),
         ).fetchall()
 
 
@@ -104,27 +120,25 @@ def get_trends(
     """Return aggregate metrics over the last ``window_days`` days.
 
     Returns:
-        Dict containing keys like 'total_sessions', 'total_interventions',
-        'effective_rate', etc.
+        Dict with keys: window_days, total_sessions, total_interventions,
+        effective_interventions, effective_rate_percent.
     """
     db_path = db_path or config.EVENTS_DB_PATH
     cutoff = _utcnow() - timedelta(days=window_days)
-    
+
     with get_connection(db_path) as conn:
-        # Sessions count
         sess_row = conn.execute(
             "SELECT count(*) as count FROM sessions WHERE started_at >= ?",
-            (cutoff,)
+            (cutoff,),
         ).fetchone()
-        
-        # Interventions count and effectiveness
+
         int_rows = conn.execute(
             """SELECT count(*) as total,
                       sum(case when effective = 1 then 1 else 0 end) as effective_count
                FROM interventions i
                JOIN events e ON i.event_id = e.id
                WHERE e.timestamp >= ?""",
-            (cutoff,)
+            (cutoff,),
         ).fetchone()
 
     total_int = int_rows["total"] or 0

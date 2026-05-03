@@ -5,7 +5,7 @@ Usage:
     uv run python scripts/export_snapshot.py
     uv run python scripts/export_snapshot.py --limit 30 --out web/data
 
-Reuses src.sentinelsleep.dashboard.queries as the single source of truth
+Reuses src.sentinelsleep.db.queries as the single source of truth
 for all read shapes. Never writes to the database.
 """
 
@@ -25,7 +25,7 @@ def _row_to_dict(row) -> dict:
 
 
 def export(limit: int, out_dir: Path) -> None:
-    from sentinelsleep.dashboard import queries
+    from sentinelsleep.db import queries
     from sentinelsleep.config import AUDIO_CACHE_DIR
 
     out_dir.mkdir(parents=True, exist_ok=True)

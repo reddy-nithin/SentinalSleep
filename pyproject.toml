@@ -28,10 +28,7 @@ dependencies = [
     "pydub>=0.25.1",
     "numpy>=1.26.0,<2.2.0",
 
-    # Dashboard
-    "streamlit>=1.39.0",
-    "plotly>=5.24.0",
-    "matplotlib>=3.9.0",
+    # Data / utilities
     "pandas>=2.2.0",
 
     # Utilities

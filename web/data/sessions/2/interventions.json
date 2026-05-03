@@ -9,7 +9,6 @@
     "post_dss": 0.2,
     "effective": 1,
     "timestamp": "2026-04-29 13:07:06.276817",
-    "session_id": 2,
-    "intervention_clip": "intervention_severe_v1.wav"
+    "dss": 0.65
   }
 ]

@@ -50,5 +50,5 @@ def test_subpackage_imports() -> None:
     import sentinelsleep.verification  # noqa: F401
     import sentinelsleep.generation  # noqa: F401
     import sentinelsleep.orchestrator  # noqa: F401
-    import sentinelsleep.dashboard  # noqa: F401
+    import sentinelsleep.db  # noqa: F401
     import sentinelsleep.demo  # noqa: F401

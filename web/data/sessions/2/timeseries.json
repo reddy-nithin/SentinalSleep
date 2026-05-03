@@ -1,0 +1,194 @@
+[
+  {
+    "timestamp": "2026-04-29 13:02:02.276817",
+    "state": "listening",
+    "dss": 0.04589794978431431,
+    "valence": 0.8,
+    "arousal": 0.2,
+    "dominance": 0.7
+  },
+  {
+    "timestamp": "2026-04-29 13:02:32.276817",
+    "state": "listening",
+    "dss": 0.0835384784798105,
+    "valence": 0.8,
+    "arousal": 0.2,
+    "dominance": 0.7
+  },
+  {
+    "timestamp": "2026-04-29 13:03:02.276817",
+    "state": "listening",
+    "dss": 0.016857349568741832,
+    "valence": 0.8,
+    "arousal": 0.2,
+    "dominance": 0.7
+  },
+  {
+    "timestamp": "2026-04-29 13:03:32.276817",
+    "state": "listening",
+    "dss": 0.06039547730845801,
+    "valence": 0.8,
+    "arousal": 0.2,
+    "dominance": 0.7
+  },
+  {
+    "timestamp": "2026-04-29 13:04:02.276817",
+    "state": "listening",
+    "dss": 0.054955107895763425,
+    "valence": 0.8,
+    "arousal": 0.2,
+    "dominance": 0.7
+  },
+  {
+    "timestamp": "2026-04-29 13:04:32.276817",
+    "state": "listening",
+    "dss": 0.08091591075806386,
+    "valence": 0.8,
+    "arousal": 0.2,
+    "dominance": 0.7
+  },
+  {
+    "timestamp": "2026-04-29 13:05:02.276817",
+    "state": "listening",
+    "dss": 0.06741077921925762,
+    "valence": 0.8,
+    "arousal": 0.2,
+    "dominance": 0.7
+  },
+  {
+    "timestamp": "2026-04-29 13:05:32.276817",
+    "state": "listening",
+    "dss": 0.06721131713779398,
+    "valence": 0.8,
+    "arousal": 0.2,
+    "dominance": 0.7
+  },
+  {
+    "timestamp": "2026-04-29 13:06:02.276817",
+    "state": "listening",
+    "dss": 0.09926146235144989,
+    "valence": 0.8,
+    "arousal": 0.2,
+    "dominance": 0.7
+  },
+  {
+    "timestamp": "2026-04-29 13:06:32.276817",
+    "state": "listening",
+    "dss": 0.021821018391494286,
+    "valence": 0.8,
+    "arousal": 0.2,
+    "dominance": 0.7
+  },
+  {
+    "timestamp": "2026-04-29 13:07:02.276817",
+    "state": "flagged",
+    "dss": 0.45,
+    "valence": 0.4,
+    "arousal": 0.5,
+    "dominance": 0.4
+  },
+  {
+    "timestamp": "2026-04-29 13:07:04.276817",
+    "state": "flagged",
+    "dss": 0.55,
+    "valence": 0.3,
+    "arousal": 0.7,
+    "dominance": 0.3
+  },
+  {
+    "timestamp": "2026-04-29 13:07:06.276817",
+    "state": "intervening",
+    "dss": 0.65,
+    "valence": 0.2,
+    "arousal": 0.8,
+    "dominance": 0.2
+  },
+  {
+    "timestamp": "2026-04-29 13:07:36.276817",
+    "state": "resolved",
+    "dss": 0.2,
+    "valence": 0.6,
+    "arousal": 0.4,
+    "dominance": 0.5
+  },
+  {
+    "timestamp": "2026-04-29 13:07:41.276817",
+    "state": "listening",
+    "dss": 0.06245901512445565,
+    "valence": 0.8,
+    "arousal": 0.2,
+    "dominance": 0.7
+  },
+  {
+    "timestamp": "2026-04-29 13:08:11.276817",
+    "state": "listening",
+    "dss": 0.054968151457011394,
+    "valence": 0.8,
+    "arousal": 0.2,
+    "dominance": 0.7
+  },
+  {
+    "timestamp": "2026-04-29 13:08:41.276817",
+    "state": "listening",
+    "dss": 0.04456277432072854,
+    "valence": 0.8,
+    "arousal": 0.2,
+    "dominance": 0.7
+  },
+  {
+    "timestamp": "2026-04-29 13:09:11.276817",
+    "state": "listening",
+    "dss": 0.08777291659108011,
+    "valence": 0.8,
+    "arousal": 0.2,
+    "dominance": 0.7
+  },
+  {
+    "timestamp": "2026-04-29 13:09:41.276817",
+    "state": "listening",
+    "dss": 0.033326393396504506,
+    "valence": 0.8,
+    "arousal": 0.2,
+    "dominance": 0.7
+  },
+  {
+    "timestamp": "2026-04-29 13:10:11.276817",
+    "state": "listening",
+    "dss": 0.011384730772986818,
+    "valence": 0.8,
+    "arousal": 0.2,
+    "dominance": 0.7
+  },
+  {
+    "timestamp": "2026-04-29 13:10:41.276817",
+    "state": "listening",
+    "dss": 0.09232784464990958,
+    "valence": 0.8,
+    "arousal": 0.2,
+    "dominance": 0.7
+  },
+  {
+    "timestamp": "2026-04-29 13:11:11.276817",
+    "state": "listening",
+    "dss": 0.019887687863595984,
+    "valence": 0.8,
+    "arousal": 0.2,
+    "dominance": 0.7
+  },
+  {
+    "timestamp": "2026-04-29 13:11:41.276817",
+    "state": "listening",
+    "dss": 0.04659131767347205,
+    "valence": 0.8,
+    "arousal": 0.2,
+    "dominance": 0.7
+  },
+  {
+    "timestamp": "2026-04-29 13:12:11.276817",
+    "state": "listening",
+    "dss": 0.0022950693156183143,
+    "valence": 0.8,
+    "arousal": 0.2,
+    "dominance": 0.7
+  }
+]

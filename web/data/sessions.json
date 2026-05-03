@@ -1,3 +1,26 @@
 [
-  { "id": 1, "started_at": "2026-05-01T22:00:00", "ended_at": "2026-05-02T05:23:47", "notes": null }
+  {
+    "id": 4,
+    "started_at": "2026-05-03 01:00:25.535829",
+    "ended_at": "2026-05-03 01:00:56.438641",
+    "notes": null
+  },
+  {
+    "id": 3,
+    "started_at": "2026-05-01 21:02:02.298868",
+    "ended_at": "2026-04-30 13:12:02.276817",
+    "notes": "Synthetic seeded session"
+  },
+  {
+    "id": 2,
+    "started_at": "2026-05-01 21:02:02.286666",
+    "ended_at": "2026-04-29 13:12:41.276817",
+    "notes": "Synthetic seeded session"
+  },
+  {
+    "id": 1,
+    "started_at": "2026-05-01 21:02:02.276985",
+    "ended_at": "2026-04-28 13:12:02.276817",
+    "notes": "Synthetic seeded session"
+  }
 ]

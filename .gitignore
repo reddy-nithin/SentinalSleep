@@ -37,13 +37,28 @@ docs/demo.gif
 # Development artifacts — not part of the shipped product
 SENTINELSLEEP_PLAN.md
 EVIDENCE_LOG.md
+CLAUDE.md
 .claude/
+.superdesign/
 docs/intermediate_results.md
 docs/intermediate_results.pdf
 docs/.render/
 
-# Streamlit secrets
-.streamlit/secrets.toml
+# Presentation and demo materials (kept locally, not for GitHub)
+docs/demo_runbook.md
+docs/demo_script.md
+docs/presentation_outline.md
+docs/DEMO_GUIDE.md
+
+# Dev scratch files
+scratch.py
+
+# Root-level stray npm files (belong in web/ only)
+/package.json
+/package-lock.json
+
+# Streamlit (dashboard removed)
+.streamlit/
 
 # Editor
 .vscode/

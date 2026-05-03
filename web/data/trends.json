@@ -1,18 +1,7 @@
 {
-  "total_sessions": 14,
-  "total_interventions": 22,
-  "effective_interventions": 19,
-  "effective_rate_percent": 86.4,
-  "disturbances_per_night": [2, 3, 1, 4, 2, 1, 2, 3, 2, 1, 3, 2, 1, 2],
-  "effectiveness_by_night": [80, 85, 100, 75, 90, 100, 85, 80, 90, 100, 83, 90, 100, 85],
-  "dates": [
-    "2026-04-19","2026-04-20","2026-04-21","2026-04-22","2026-04-23",
-    "2026-04-24","2026-04-25","2026-04-26","2026-04-27","2026-04-28",
-    "2026-04-29","2026-04-30","2026-05-01","2026-05-02"
-  ],
-  "state_minutes_per_night": {
-    "listening": [388, 375, 410, 362, 390, 408, 389, 375, 394, 407, 376, 391, 408, 390],
-    "flagged":   [22,   32,   8,  42,  21,   9,  22,  33,  18,   9,  32,  21,   8,  22],
-    "intervening":[10,  13,   2,  16,   9,   3,   9,  12,   8,   4,  12,   8,   4,   8]
-  }
+  "window_days": 7,
+  "total_sessions": 4,
+  "total_interventions": 1,
+  "effective_interventions": 1,
+  "effective_rate_percent": 100.0
 }
