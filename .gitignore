@@ -36,7 +36,6 @@ docs/demo.gif
 
 # Development artifacts — not part of the shipped product
 SENTINELSLEEP_PLAN.md
-EVIDENCE_LOG.md
 CLAUDE.md
 .claude/
 .superdesign/
