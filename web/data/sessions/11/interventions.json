@@ -1,0 +1,14 @@
+[
+  {
+    "id": 3,
+    "event_id": 481,
+    "started_at": "2026-05-04 01:17:46.767150",
+    "ended_at": "2026-05-04 01:18:18.856839",
+    "clip_path": "/Users/nithinreddy/SentinalSleep/data/audio_cache/mixed/intervention_severe_v1.wav",
+    "pre_dss": 0.7428528868472843,
+    "post_dss": 0.3723670292860311,
+    "effective": 1,
+    "timestamp": "2026-05-04 01:17:46.434275",
+    "dss": 0.7428528868472843
+  }
+]

@@ -1,0 +1,474 @@
+[
+  {
+    "timestamp": "2026-05-04 00:49:53.827503",
+    "state": "listening",
+    "dss": 0.001767549386356897,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:49:56.161270",
+    "state": "listening",
+    "dss": 0.0018097068246025892,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:49:58.469375",
+    "state": "listening",
+    "dss": 0.0015994647025851713,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:50:00.772541",
+    "state": "listening",
+    "dss": 0.0017843972915039968,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:50:03.079843",
+    "state": "listening",
+    "dss": 0.001642072521668348,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:50:05.368853",
+    "state": "listening",
+    "dss": 0.001767549386356897,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:50:07.644999",
+    "state": "listening",
+    "dss": 0.0018097068246025892,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:50:10.024590",
+    "state": "listening",
+    "dss": 0.0015994647025851713,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:50:12.374951",
+    "state": "listening",
+    "dss": 0.0017843972915039968,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:50:14.771509",
+    "state": "listening",
+    "dss": 0.001642072521668348,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:50:17.117136",
+    "state": "listening",
+    "dss": 0.001767549386356897,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:50:19.498002",
+    "state": "listening",
+    "dss": 0.0018097068246025892,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:50:21.819225",
+    "state": "listening",
+    "dss": 0.0015994647025851713,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:50:24.148930",
+    "state": "listening",
+    "dss": 0.0017843972915039968,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:50:26.437786",
+    "state": "listening",
+    "dss": 0.04802926719440297,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:50:28.793368",
+    "state": "listening",
+    "dss": 0.02449238345763015,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:50:31.121008",
+    "state": "listening",
+    "dss": 0.02497597069304902,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:50:33.398403",
+    "state": "listening",
+    "dss": 0.021357543930794382,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:50:35.679823",
+    "state": "listening",
+    "dss": 0.05256868202676771,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:50:37.972007",
+    "state": "listening",
+    "dss": 0.016712869569140996,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:50:40.282619",
+    "state": "listening",
+    "dss": 0.011351167159568095,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:50:42.628538",
+    "state": "listening",
+    "dss": 0.009727618860075206,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:50:44.938725",
+    "state": "listening",
+    "dss": 0.029300717634595783,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:50:47.217973",
+    "state": "listening",
+    "dss": 0.06090976856742805,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:50:49.529149",
+    "state": "listening",
+    "dss": 0.05384331372483903,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:50:51.838627",
+    "state": "listening",
+    "dss": 0.03959071758623806,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:50:54.152148",
+    "state": "listening",
+    "dss": 0.002307371820338191,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:50:56.479164",
+    "state": "listening",
+    "dss": 0.028409060169642248,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:50:58.800922",
+    "state": "listening",
+    "dss": 0.032675381760195556,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:51:01.120794",
+    "state": "listening",
+    "dss": 0.011557340490628943,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:51:03.450522",
+    "state": "listening",
+    "dss": 0.0018097068246025892,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:51:05.956833",
+    "state": "listening",
+    "dss": 0.0015994647025851713,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:51:08.348520",
+    "state": "listening",
+    "dss": 0.0017843972915039968,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:51:10.635174",
+    "state": "listening",
+    "dss": 0.001642072521668348,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:51:12.952069",
+    "state": "listening",
+    "dss": 0.001767549386356897,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:51:15.256683",
+    "state": "listening",
+    "dss": 0.0018097068246025892,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:51:17.534636",
+    "state": "listening",
+    "dss": 0.0015994647025851713,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:51:19.804925",
+    "state": "listening",
+    "dss": 0.0017843972915039968,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:51:22.077975",
+    "state": "listening",
+    "dss": 0.001642072521668348,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:51:24.393318",
+    "state": "listening",
+    "dss": 0.001767549386356897,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:51:26.655360",
+    "state": "listening",
+    "dss": 0.0018097068246025892,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:51:28.924891",
+    "state": "listening",
+    "dss": 0.0015994647025851713,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:51:31.193614",
+    "state": "listening",
+    "dss": 0.0017843972915039968,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:51:33.465611",
+    "state": "listening",
+    "dss": 0.001642072521668348,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:51:35.744137",
+    "state": "listening",
+    "dss": 0.001767549386356897,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:51:38.016041",
+    "state": "listening",
+    "dss": 0.0018097068246025892,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:51:40.299952",
+    "state": "listening",
+    "dss": 0.0015994647025851713,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:51:42.641449",
+    "state": "listening",
+    "dss": 0.0017843972915039968,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:51:44.976524",
+    "state": "listening",
+    "dss": 0.001642072521668348,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:51:47.283638",
+    "state": "listening",
+    "dss": 0.001767549386356897,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:51:49.554869",
+    "state": "listening",
+    "dss": 0.0018097068246025892,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:51:51.863791",
+    "state": "listening",
+    "dss": 0.0015994647025851713,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:51:54.165701",
+    "state": "listening",
+    "dss": 0.0017843972915039968,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:51:56.749838",
+    "state": "listening",
+    "dss": 0.001642072521668348,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:51:59.106154",
+    "state": "listening",
+    "dss": 0.001767549386356897,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:52:01.446724",
+    "state": "listening",
+    "dss": 0.0018097068246025892,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:52:03.799320",
+    "state": "listening",
+    "dss": 0.0015994647025851713,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:52:06.154197",
+    "state": "listening",
+    "dss": 0.0017843972915039968,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  },
+  {
+    "timestamp": "2026-05-04 00:52:08.523095",
+    "state": "listening",
+    "dss": 0.001642072521668348,
+    "valence": null,
+    "arousal": null,
+    "dominance": null
+  }
+]
