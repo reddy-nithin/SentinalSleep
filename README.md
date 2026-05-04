@@ -7,6 +7,9 @@
 [![License: MIT](https://img.shields.io/badge/Source-MIT-green)](LICENSE)
 [![Models: Non-commercial](https://img.shields.io/badge/Models-CC--BY--NC--SA--4.0-orange)](NOTICES.md)
 [![Research Prototype](https://img.shields.io/badge/Status-Research%20Prototype-blueviolet)](#research-disclaimer)
+[![Live App](https://img.shields.io/badge/Live%20App-sentinal--sleep.vercel.app-8B5CF6?logo=vercel&logoColor=white)](https://sentinal-sleep.vercel.app/)
+[![Demo Video](https://img.shields.io/badge/Demo%20Video-Google%20Drive-4285F4?logo=google-drive&logoColor=white)](https://drive.google.com/file/d/1v3Qv6cED4vP-WJCR-g4vB5GjQDQQrukW/view?usp=sharing)
+[![Slide Deck](https://img.shields.io/badge/Slide%20Deck-Google%20Slides-FBBC04?logo=google-slides&logoColor=white)](https://docs.google.com/presentation/d/1KmFI1rSwKuJ5OTfXCuF5EBgSvzFpEWY30-QhS8qba-Q/edit?usp=sharing)
 
 SentinelSleep is an audio AI system that monitors bedroom microphone audio for nightmare distress signatures and automatically injects pre-generated therapeutic soundscapes to interrupt them — without waking the patient. A Next.js dashboard visualizes overnight session data, DSS waveforms, and longitudinal sleep trends.
 
@@ -52,6 +55,32 @@ Mic / WAV file
 The Next.js dashboard reads from JSON exports of the SQLite event log — overnight session timelines, DSS waveforms, intervention audio playback, and multi-session trend charts.
 
 > **Demo data is included.** Clone the repo, run `npm run dev`, and the dashboard is immediately populated with four synthetic overnight sessions.
+
+→ **[Live dashboard on Vercel](https://sentinal-sleep.vercel.app/)**
+
+---
+
+## Screenshots
+
+### Landing Page & Overview
+
+| | |
+| --- | --- |
+| ![Landing page](docs/screenshots/landing.png) | ![Morning overview](docs/screenshots/overview.png) |
+| Landing page — live recovery score preview and session summary | Morning overview — Recovery Score 99, 100% intervention effectiveness |
+
+### Night Detail & Trends
+
+| | |
+| --- | --- |
+| ![Night detail DSS waveform](docs/screenshots/night-detail.png) | ![14-night trends](docs/screenshots/trends.png) |
+| DSS waveform with 0.4 threshold line; green intervention markers at nightmare peaks | 14-night trend view: 22 total interventions, 86% average effectiveness |
+
+### Live Simulation
+
+![Terminal simulation](docs/screenshots/terminal.png)
+
+Terminal output: full LISTENING → FLAGGED → DISTRESSED → INTERVENING → RESOLVED state arc with valence/arousal/dominance readings
 
 ---
 
@@ -137,6 +166,18 @@ SentinalSleep/
 └── notebooks/
     └── pregenerate_on_colab.ipynb # Colab notebook for cache generation
 ```
+
+---
+
+## Resources
+
+| Resource | Link |
+| -------- | ---- |
+| Live App | [sentinal-sleep.vercel.app](https://sentinal-sleep.vercel.app/) |
+| Demo Video | [Google Drive](https://drive.google.com/file/d/1v3Qv6cED4vP-WJCR-g4vB5GjQDQQrukW/view?usp=sharing) |
+| Slide Deck | [Google Slides](https://docs.google.com/presentation/d/1KmFI1rSwKuJ5OTfXCuF5EBgSvzFpEWY30-QhS8qba-Q/edit?usp=sharing) |
+| Final Report | [docs/final\_report.pdf](docs/final_report.pdf) |
+| Architecture | [docs/architecture.md](docs/architecture.md) |
 
 ---
 
